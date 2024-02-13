@@ -56,7 +56,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     return;
   }
   const exercise = new Exercise({
-    user: user,
+    userId,
     description,
     duration,
     date: date ? new Date(date) : new Date(),
@@ -76,7 +76,8 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
   }
 });
 
-// Get all exercises for a user
+// A GET request to /api/users/:_id/logs will return the user object
+// with a log array of all the exercises added.
 app.get('/api/users/:_id/logs', async (req, res) => {
   const { _id } = req.params;
   const { from, to, limit } = req.query;
@@ -87,21 +88,20 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     return;
   }
   const query = { userId };
-  if (from) {
-    query.date = { $gte: new Date(from) };
-  }
-  if (to) {
-    query.date = { $lte: new Date(to) };
-  }
-  if (from && to) {
-    query.date = { $gte: new Date(from), $lte: new Date(to) };
-  }
-  if (limit) {
-    query.limit = parseInt(limit);
-  }
+  // if (from) {
+  //   query.date = { $gte: new Date(from) };
+  // }
+  // if (to) {
+  //   query.date = { $lte: new Date(to) };
+  // }
+  // if (from && to) {
+  //   query.date = { $gte: new Date(from), $lte: new Date(to) };
+  // }
+  // if (limit) {
+  //   query.limit = parseInt(limit);
+  // }
   try {
     const exercises = await Exercise.find(query).exec();
-    console.log(exercises);
     const log = exercises.map(exercise => ({
       description: exercise.description,
       duration: exercise.duration,
