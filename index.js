@@ -88,20 +88,25 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     return;
   }
   const query = { userId };
-  // if (from) {
-  //   query.date = { $gte: new Date(from) };
-  // }
-  // if (to) {
-  //   query.date = { $lte: new Date(to) };
-  // }
-  // if (from && to) {
-  //   query.date = { $gte: new Date(from), $lte: new Date(to) };
-  // }
-  // if (limit) {
-  //   query.limit = parseInt(limit);
-  // }
+  if (from || to) {
+    query.date = {};
+    if (from) {
+      query.date.$gte = new Date(from);
+    }
+    if (to) {
+      query.date.$lte = new Date(to);
+    }
+  }
+  console.log(query);
   try {
-    const exercises = await Exercise.find(query).exec();
+    let exercisesQuery = Exercise.find(query);
+
+    if (limit) {
+      exercisesQuery = exercisesQuery.limit(parseInt(limit));
+    }
+
+    const exercises = await exercisesQuery.exec();
+
     const log = exercises.map(exercise => ({
       description: exercise.description,
       duration: exercise.duration,
